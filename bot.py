@@ -3,7 +3,7 @@ from discord.ext import commands
 import requests
 import asyncio
 
-API_KEY = "sk-7d18873c91c747038c3bfbb839c6c55f"
+API_KEY = ""
 API_URL = "https://api.deepseek.com/chat/completions"
 
 intents = discord.Intents.all()
@@ -64,54 +64,11 @@ async def ask(ctx, *, prompt):
             await ctx.message.delete()
             await bot_msg.delete()
         else:
-            await ctx.send("❌ Ошибка: " + str(data.get("error", {}).get("message", "Неизвестно")), delete_after=20)
+            await ctx.send("Ошибка: " + str(data.get("error", {}).get("message", "Неизвестно")), delete_after=20)
             print(f"[ERROR] {data}")
 
     except Exception as e:
-        await ctx.send("❌ Ошибка при соединении с API.", delete_after=20)
+        await ctx.send("Ошибка при соединении с API.", delete_after=20)
         print(f"[ERROR] {e}")
 
-@bot.command()
-async def meta(ctx):
-    url = "https://api.opendota.com/api/heroStats"
-    try:
-        response = requests.get(url)
-        heroes = response.json()
-
-        pos_roles = {1: [], 2: [], 3: [], 4: [], 5: []}
-
-        for hero in heroes:
-            pro_win = hero.get("pro_win", 0)
-            pro_pick = hero.get("pro_pick", 0)
-            name = hero.get("localized_name", "Неизвестно")
-
-            if pro_pick >= 50:
-                winrate = pro_win / pro_pick if pro_pick else 0
-                roles = hero.get("roles", [])
-
-                if "Carry" in roles:
-                    pos_roles[1].append((name, winrate, pro_pick))
-                if "Mid" in roles:
-                    pos_roles[2].append((name, winrate, pro_pick))
-                if "Offlaner" in roles or "Initiator" in roles:
-                    pos_roles[3].append((name, winrate, pro_pick))
-                if "Support" in roles:
-                    if "Hard Support" in roles or "Disabler" in roles:
-                        pos_roles[5].append((name, winrate, pro_pick))
-                    else:
-                        pos_roles[4].append((name, winrate, pro_pick))
-
-        result = ""
-        for pos in range(1, 6):
-            top = sorted(pos_roles[pos], key=lambda x: (x[1], x[2]), reverse=True)[:5]
-            result += f"\n**Позиция {pos}**:\n"
-            for i, (name, wr, picks) in enumerate(top, 1):
-                result += f"{i}. {name} — {wr*100:.1f}% WR / {picks} игр\n"
-
-        await ctx.send(result[:2000])
-
-    except Exception as e:
-        await ctx.send("❌ Ошибка при получении меты.")
-        print(f"[ERROR] {e}")
-
-bot.run("MTM4OTY2NjQ1NjIwNzEwMjA1Mg.GMiU3s.ecGxJbdVIYeoxbyvAvY6eY5VvEmiByozpnYhNg")
+bot.run("")
